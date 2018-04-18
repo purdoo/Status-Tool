@@ -45,7 +45,7 @@ let validHeaders = (req, res, next) => {
     else return next();
 };
 
-// validate the request body (POST)
+// validate the request body (POST and PUT)
 let validPostPayload = (req, res, next) => {
     // console.log(v.validate(req.body, bodySchema));
     if(v.validate(req.body, bodySchema).errors.length) {
@@ -80,13 +80,29 @@ router.use(isAuthenticated);
 
 router.post('/', validPostPayload, async (req, res) => {
     try {
-        let newStatus = req.body;
-        let dbRes = await statusDb.addStatus(newStatus);
+        let dbRes = await statusDb.addStatus(req.body);
         console.log(dbRes);
         res.send('Created status!');
     } catch (err) {
         console.log(err);
         res.status(400).send(err);
+    }
+});
+
+router.put('/:statusId', validPostPayload, async (req, res) => {
+    try {
+        // check if status actually exists
+        let statusId = req.params.statusId;
+        let existingStatus = await statusDb.getStatus(statusId);
+        if(Object.keys(existingStatus).length) {
+            await statusDb.updateStatus(statusId, req.body);
+            res.send('Status updated!');
+        } else {
+            res.status(400).send('Status not found, cannot update!');
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(400).send('Error updating status!');
     }
 });
 

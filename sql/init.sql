@@ -10,11 +10,12 @@ CREATE TABLE `status`.`Users` (
   PRIMARY KEY (`user_id`),
   UNIQUE INDEX `email_UNIQUE` (`email` ASC));
 
-
 CREATE TABLE `status`.`Status` (
   `status_id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
-  `body` VARCHAR(255) NOT NULL,
+  `summary` TEXT NOT NULL,
+  `goals` TEXT NOT NULL,
+  `blockers` TEXT NOT NULL,
   `created` DATETIME NULL DEFAULT now(),
   PRIMARY KEY (`status_id`, `user_id`),
   INDEX `user_id_idx` (`user_id` ASC),

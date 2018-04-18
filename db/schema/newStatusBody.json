@@ -3,7 +3,9 @@
     "type": "object",
     "properties": {
         "user_id": {"type": "integer", "minimum": 1},
-        "body": {"type": "string"}
+        "summary": {"type": "string"},
+        "goals": {"type": "string"},
+        "blockers": {"type": "string"}
     },
-    "required": ["user_id", "body"]
+    "required": ["user_id", "summary", "goals", "blockers"]
 }

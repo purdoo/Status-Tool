@@ -9,7 +9,12 @@ let router = express.Router();
 router.use(bodyParser.json()); // support json encoded bodies
 router.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
+const Validator = require('jsonschema').Validator;
+let v = new Validator();
 
+const bodySchema = require('../db/schema/newUserBody.json');
+
+/* Routing Middleware */
 
 // checks to see if the headers for the req are properly set (present)
 let validHeaders = (req, res, next) => {
@@ -34,8 +39,17 @@ let isAuthenticated = async (req, res, next) => {
     }
 };
 
+// validate the request body (POST and PUT)
+let validPostPayload = (req, res, next) => {
+    if(v.validate(req.body, bodySchema).errors.length) {
+        res.status(400).send('Invalid Request Body');
+    } else {
+        return next();
+    }
+};
+
 /* USER API */
-router.post('/', async (req, res) => {
+router.post('/', validPostPayload, async (req, res) => {
     try {
         let newUser = req.body;
         let existing = await userDb.getUser(newUser.email);
@@ -61,7 +75,7 @@ router.post('/', async (req, res) => {
 
 router.use(validHeaders);
 
-router.get('/', async (req, res, next) => {
+router.get('/', async (req, res) => {
     let email = req.headers.email;
     let user = await userDb.getUser(email);
     res.send(user);
@@ -76,7 +90,7 @@ router.delete('/', isAuthenticated, async (req, res) => {
 
     } catch (err) {
         console.log(err);
-        res.status(400).send(err);
+        res.status(400).send('Error deleting user!');
     }
 
 });
