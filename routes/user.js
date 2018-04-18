@@ -9,9 +9,17 @@ let router = express.Router();
 router.use(bodyParser.json()); // support json encoded bodies
 router.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
+
+
+// checks to see if the headers for the req are properly set (present)
+let validHeaders = (req, res, next) => {
+    // check for email header
+    if (req.headers.email) return next();
+    else res.status(400).send('Invalid Headers')
+};
+
 // checks if the current user is authenticated through the headers
 let isAuthenticated = async (req, res, next) => {
-    // get credentials from req header
     try {
         let email = req.headers.email || '', password = req.headers.password || '';
         let creds = await userDb.getUserCreds(email);
@@ -27,18 +35,10 @@ let isAuthenticated = async (req, res, next) => {
 };
 
 /* USER API */
-// authRouter.use(isAuthenticated);
-
-router.get('/', async (req, res, next) => {
-    let email = req.headers.email;
-    let user = await userDb.getUser(email);
-    res.send(user);
-});
-
 router.post('/', async (req, res) => {
     try {
         let newUser = req.body;
-        let existing = await userDb.getUser(newUser.email)
+        let existing = await userDb.getUser(newUser.email);
         if(Object.keys(existing).length) {
             // user already exists
             throw 'User with email ' + newUser.email + ' already exists';
@@ -55,9 +55,18 @@ router.post('/', async (req, res) => {
         }
     } catch (err) {
         console.log(err);
-        res.status(400).send(err);
+        res.status(400).send('Error creating user!');
     }
 });
+
+router.use(validHeaders);
+
+router.get('/', async (req, res, next) => {
+    let email = req.headers.email;
+    let user = await userDb.getUser(email);
+    res.send(user);
+});
+
 
 router.delete('/', isAuthenticated, async (req, res) => {
     try {

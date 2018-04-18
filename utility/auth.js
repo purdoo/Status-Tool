@@ -7,11 +7,6 @@ exports.saltHashPassword = (password) => {
     return sha512(password, salt);
 };
 
-// exports.validate = (password, storedCreds) => {
-//     let requestHash = sha512(password, storedCreds.salt);
-//     return (requestHash.hash === storedCreds.hash);
-// };
-
 exports.authenticate = (password, hash, salt) => {
     let requestHash = sha512(password, salt);
     return (requestHash.hash === hash);

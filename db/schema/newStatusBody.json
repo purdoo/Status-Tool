@@ -1,0 +1,9 @@
+{
+    "id": "/NewStatusBody",
+    "type": "object",
+    "properties": {
+        "user_id": {"type": "integer", "minimum": 1},
+        "body": {"type": "string"}
+    },
+    "required": ["user_id", "body"]
+}
