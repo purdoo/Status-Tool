@@ -10,6 +10,10 @@ let connection = mysql.createConnection({
     database : 'status'
 });
 
+// What I did
+// What I am gonna do
+// What I need
+
 exports.getAllStatus = () => {
     return new Promise((resolve, reject) => {
         connection.query('SELECT * FROM `Status`', function (error, results) {
@@ -61,7 +65,7 @@ exports.updateStatus = (id, status) => {
 
 exports.deleteStatus = (email) => {
     return new Promise((resolve, reject) => {
-        connection.query('DELETE FROM `Users` WHERE `email` = ?', [email], function (error, results) {
+        connection.query('DELETE FROM `Status` WHERE `email` = ?', [email], function (error, results) {
             if (error) reject(error);
             resolve(results);
         });

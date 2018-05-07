@@ -73,6 +73,21 @@ router.post('/', validPostPayload, async (req, res) => {
     }
 });
 
+router.post('/login', async (req, res) => {
+    try {
+        let loginUser = req.body;
+        let existingUserCreds = await userDb.getUserCreds(loginUser.email);
+        if(auth.authenticate(loginUser.password, existingUserCreds.hash, existingUserCreds.salt)) {
+            res.send({ userId: existingUserCreds.user_id, email: loginUser.email });
+        } else {
+            res.status(401).send('UNAUTHENTICATED!');
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(400).send('Error logging in!');
+    }
+});
+
 router.use(validHeaders);
 
 router.get('/', async (req, res) => {
@@ -80,7 +95,6 @@ router.get('/', async (req, res) => {
     let user = await userDb.getUser(email);
     res.send(user);
 });
-
 
 router.delete('/', isAuthenticated, async (req, res) => {
     try {

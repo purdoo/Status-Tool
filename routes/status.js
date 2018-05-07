@@ -94,6 +94,7 @@ router.put('/:statusId', validPostPayload, async (req, res) => {
         // check if status actually exists
         let statusId = req.params.statusId;
         let existingStatus = await statusDb.getStatus(statusId);
+
         if(Object.keys(existingStatus).length) {
             await statusDb.updateStatus(statusId, req.body);
             res.send('Status updated!');
